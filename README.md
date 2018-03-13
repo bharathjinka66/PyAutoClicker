@@ -27,5 +27,9 @@ At the moment, you use Left Shift to engage the clicking. This will be customiza
 If you are averse to GUIs, there is a much more minimal command line version
 if you run autoClicker.py. It is also lacking a few of the options of the GUI.
 
-The only supported platform at the moment is Linux (using X) and Python 2.7.
+The only supported platform at the moment is Linux (using X) and Python >=3.5.
 This could be expanded in the future :)
+
+The source code was taken over from okiyama's repo at
+[https://github.com/okiyama/PyAutoClicker](https://github.com/okiyama/PyAutoClicker)
+and ported to Python 3.5 with a few smaller adjustments (such as the input field for the key to indicate the auto-clicking).

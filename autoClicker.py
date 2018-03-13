@@ -3,8 +3,11 @@ Simple Python Auto-clicker. Soon to use Tkinter for a GUI but at the moment
 Command line only. 
 Author: Julian Jocque
 Date: 7/1/14
+
+Updated by: Carsten Ziegler
+Date: 2/17/2018
 """
-from pymouse import PyMouse, PyMouseEvent
+from pymouse import PyMouse, PyMouseEvent       # module PyUserInput
 import time, random
 import pyxhook
 from threading import Thread
@@ -24,7 +27,7 @@ class AutoClicker(PyMouseEvent):
         self.mouse = PyMouse()
         self.toggleClick = toggleClick
         self.holdClick = holdClick
-        self.keyToUse = keyToUse
+        self.keyToUse = keyToUse                            #"Caps_Lock"
         self.initHookManager()
 
     def initHookManager(self):
@@ -40,14 +43,14 @@ class AutoClicker(PyMouseEvent):
 
     def keyDownHandler(self, hookEvent = None):
         """
-        Begins the clicking inside of a thread. 
+        Begins the clicking inside of a thread.
         """
         if hookEvent.Key == self.keyToUse:
             if not self.isClicking:
                 Thread(target = self.threadedAutoClick, args=(hookEvent,)).start()
             elif self.toggleClick:
                 self.stopClicking()
-   
+
     def threadedAutoClick(self, hookEvent = None):
         """
         Auto clicks inside a thread so that it can be exited by other functions.
@@ -63,7 +66,7 @@ class AutoClicker(PyMouseEvent):
 
     def keyUpHandler(self, hookEvent = None):
         """
-        Handles any key being released. 
+        Handles any key being released.
         """
         if hookEvent.Key == self.keyToUse and self.holdClick:
             self.stopClicking()
@@ -76,7 +79,7 @@ class AutoClicker(PyMouseEvent):
 
     def cleanUp(self):
         """
-        Cleans up the AutoClicker. 
+        Cleans up the AutoClicker.
         You *must* call this when you want to any program which uses this class to end!
         """
         self.hm.cancel()
@@ -89,9 +92,9 @@ def getFloat(message):
     toRet = -1.0
     while(toRet < 0.0):
         try:
-            toRet = float(raw_input(message + " "))
+            toRet = float(input(message + " "))
         except ValueError:
-            toRet = float(raw_input("Please enter a number greater than 0. "))
+            toRet = float(input("Please enter a number greater than 0. "))
     return toRet
 
 def main():

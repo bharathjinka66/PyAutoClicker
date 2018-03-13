@@ -3,53 +3,55 @@ GUI for a Linux auto-clicker written in python.
 Uses Tkinter to get relevant info from the user to create an AutoClicker object.
 
 Author: Julian Jocque
-Date: 8/16/14
+Date: 8/16/2014
+
+Updated by: Carsten Ziegler
+Date: 2/17/2018
 """
 
 from autoClicker import AutoClicker
-import Tkinter as tk
-import tkMessageBox
+import tkinter as tk
+from tkinter import messagebox
 
 class AutoClickerGUI:
 
     def __init__(self, parent):
         self.initGUI(parent)
-        self.clicker = AutoClicker() 
-
+        self.clicker = AutoClicker()
 
     def initGUI(self, parent):
         """
         Initializes the GUI
         """
         self.parent = parent
-        parent.wm_title("pyAutoClicker by Julian Jocque")
-        parent.protocol("WM_DELETE_WINDOW", self.cleanUp)        
+        parent.wm_title("Felix Ziegler's AutoClicker")
+        parent.protocol("WM_DELETE_WINDOW", self.cleanUp)
         self.panel = tk.Frame(parent)
         self.panel.grid()
 
-        vcmd = (parent.register(self.validateInt), 
-            '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+        vcmd = (parent.register(self.validateInt), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
 
-        self.CPS = tk.IntVar(parent)
-        self.delay = tk.IntVar(parent)
-        self.method = tk.StringVar(parent)
-        self.method.set("Hold")
+        self.CPS =      tk.IntVar(parent, value=50)
+        self.delay =    tk.IntVar(parent, value=20)
+        self.keyToUse = tk.StringVar(parent, value="Caps_Lock")
+        self.method =   tk.StringVar(parent, value="Hold")
 
-        self.CPSText = tk.Label(parent, text="Clicks Per Second").grid(row=0, sticky=tk.W)
-        self.MSText = tk.Label(parent, text="MS of random delay").grid(row=1, sticky=tk.W)
-        self.methodText = tk.Label(parent, text="Clicking Method").grid(row=2, stick=tk.W)
+        self.CPSText =      tk.Label(parent, text="Clicks Per Second").grid(row=0, sticky=tk.W)
+        self.MSText =       tk.Label(parent, text="MS of random delay").grid(row=1, sticky=tk.W)
+        self.keyToUseText = tk.Label(parent, text="Key to use (Caps_Lock, Shift_L, ...)").grid(row=2, stick=tk.W)
+        self.methodText =   tk.Label(parent, text="Clicking Method").grid(row=3, stick=tk.W)
 
-        self.CPSEntry = tk.Entry(parent, validate = "key", 
-                validatecommand = vcmd, textvariable=self.CPS)
-        self.MSEntry = tk.Entry(parent, textvariable=self.delay)
-        self.methodEntry = tk.OptionMenu(parent, self.method, "Hold", "Toggle")
-        self.applyChangesButton = tk.Button(parent, text="Apply Changes", 
-                command=self.updateClicker)
+        self.CPSEntry =           tk.Entry(parent, validate = "key", validatecommand = vcmd, textvariable=self.CPS)
+        self.MSEntry =            tk.Entry(parent, textvariable=self.delay)
+        self.keyToUseEntry =      tk.Entry(parent, textvariable=self.keyToUse)
+        self.methodEntry =        tk.OptionMenu(parent, self.method, "Hold", "Toggle")
+        self.applyChangesButton = tk.Button(parent, text="Apply Changes", command=self.updateClicker)
 
         self.CPSEntry.grid(row=0, column=1)
         self.MSEntry.grid(row=1, column=1)
-        self.methodEntry.grid(row=2, column=1)
-        self.applyChangesButton.grid(row=3, columnspan=2) 
+        self.keyToUseEntry.grid(row=2, column=1)
+        self.methodEntry.grid(row=3, column=1)
+        self.applyChangesButton.grid(row=4, columnspan=2)
 
 
     def cleanUp(self):
@@ -57,7 +59,7 @@ class AutoClickerGUI:
         Stops the AutoClicker before closing
         """
         self.clicker.cleanUp()
-        self.parent.destroy() 
+        self.parent.destroy()
 
     def updateClicker(self):
         """
@@ -65,23 +67,22 @@ class AutoClickerGUI:
         Returns True if it successfully updated, else returns False
         """
         try:
-            CPS = self.CPS.get() 
+            CPS = self.CPS.get()
             delay = self.delay.get()
+            keyToUse = self.keyToUse.get()
         except ValueError:
             self.showInputError()
             return False
-        hold = False 
+        hold = False
         toggle = False
         if self.method.get() == "Hold":
             hold = True
         else:
             toggle = True
         self.clicker.cleanUp()
-        #TODO: Add in letting users set the key they want to use to auto click
         try:
-            self.clicker = AutoClicker(clicksPerSecond = CPS, 
-                    randomizeRange = delay, toggleClick = toggle, 
-                    holdClick = hold, keyToUse = "Shift_L")
+            self.clicker = AutoClicker(clicksPerSecond = CPS, randomizeRange = delay, toggleClick = toggle,
+                                        holdClick = hold, keyToUse = keyToUse)
         except ValueError:
            self.showInputError()
            return False
@@ -91,11 +92,9 @@ class AutoClickerGUI:
         """
         Shows a message box alerting the user that there was errors with their input.
         """
-        tkMessageBox.showinfo("Error", "One or more of the values you inputted is invalid")
+        messagebox.showinfo("Error", "One or more of the values you inputted is invalid")
 
-    def validateInt(self, action, index, value_if_allowed,
-                       prior_value, text, validation_type, 
-                       trigger_type, widget_name):
+    def validateInt(self, action, index, value_if_allowed, prior_value, text, validation_type, trigger_type, widget_name):
         """
         Validates that an Entry always contains only an int or is empty.
         """
